@@ -3,7 +3,7 @@
 // @namespace Steam Card Exchange Tools
 // @author Laurvin
 // @description A set of tools to make using SCE easier. Adds a Set Worth column to both pages, adds trade buttons to trade directly from the table, a Sync button to synchronize the Watchlist with your actual owned cards, a Booster Pack value calculator on the Inventory page, and it auto-populates Steam Trade Offers made via the buttons. Note that you need to be logged into the Steam Community page for most of it to work and you need to be logged into the Steam Store for Booster Value calculation to work. Steam usually only let's you stay logged in for about 24 hours if you don't visit the site.
-// @version 13.3
+// @version 13.4
 // @icon https://i.imgur.com/XYzKXzK.png
 // @downloadURL https://github.com/Laurvin/Steam-Card-Exchange-Tools/raw/master/Steam_Card_Exchange_Tools.user.js
 // @updateURL https://github.com/Laurvin/Steam-Card-Exchange-Tools/raw/master/Steam_Card_Exchange_Tools.user.js
@@ -39,7 +39,7 @@
     const TABLE_ID = IS_WATCHLIST ? 'private_watchlist' : 'inventorylist';
 
     // Script version shown in the status bar and the SCE toolbar button.
-    const SCRIPT_VERSION = '13.3';
+    const SCRIPT_VERSION = '13.4';
 
     // GM storage key a trade tab writes to (refreshed every ~250ms) while it's
     // actively waiting on Steam inventories to load. The SCE Watchlist/
