@@ -125,8 +125,10 @@ Any game blacklisted will get a "BL" indicator in the T B column to indicate it 
 ## Manually hiding games at Badge level 5
 To hide Green games that are already at the maximum badge level create a userstyle with [Stylus](https://github.com/openstyles/stylus) using the following:
 
+```css
 td a[href="/index.php?inventorygame-appid-275490"],
 td a[href="/index.php?inventorygame-appid-285840"]
 {
     color:red !important;
 }
+```
