@@ -3,7 +3,7 @@
 // @namespace Steam Card Exchange Tools
 // @author Laurvin
 // @description A set of tools to make using SCE easier. Adds a Set Worth column to both pages, adds trade buttons to trade directly from the table, a Sync button to synchronize the Watchlist with your actual owned cards, a Booster Pack value calculator on the Inventory page, and it auto-populates Steam Trade Offers made via the buttons. Note that you need to be logged into the Steam Community page for most of it to work and you need to be logged into the Steam Store for Booster Value calculation to work. Steam usually only let's you stay logged in for about 24 hours if you don't visit the site.
-// @version 13.4
+// @version 13.5
 // @icon https://i.imgur.com/XYzKXzK.png
 // @downloadURL https://github.com/Laurvin/Steam-Card-Exchange-Tools/raw/master/Steam_Card_Exchange_Tools.user.js
 // @updateURL https://github.com/Laurvin/Steam-Card-Exchange-Tools/raw/master/Steam_Card_Exchange_Tools.user.js
@@ -39,7 +39,7 @@
     const TABLE_ID = IS_WATCHLIST ? 'private_watchlist' : 'inventorylist';
 
     // Script version shown in the status bar and the SCE toolbar button.
-    const SCRIPT_VERSION = '13.4';
+    const SCRIPT_VERSION = '13.5';
 
     // GM storage key a trade tab writes to (refreshed every ~250ms) while it's
     // actively waiting on Steam inventories to load. The SCE Watchlist/
@@ -425,16 +425,21 @@
             .sce-trade-btn.sce-l-2:not(.yellow) { color: #f56600 !important; }
             .sce-trade-btn.sce-l-3:not(.yellow) { color: #f59e00 !important; }
 
-            /* B/L button colour states:
+            /* B/L/S button colour states:
              * - sce-craftable-now: a badge can ALREADY be crafted right now,
              *   with no further trading — bright green. (L button only.)
              * - sce-completes-badge: this SPECIFIC trade would complete a
              *   badge that wasn't craftable before — darker green, so it's
              *   visually distinct from (and one step below) craftable-now.
-             * - sce-exceeds-badge-cap: this trade would leave the user
-             *   holding more cards than useful for badge level 5 — red.
-             *   G/Buy button only; G intentionally keeps buying past what's
-             *   needed for remaining badges, this just flags when it does.
+             * - sce-exceeds-badge-cap: red. Used by two different buttons for
+             *   related reasons: on G/Buy, this SPECIFIC trade would leave
+             *   the user holding more cards than useful for badge level 5
+             *   (G intentionally keeps buying past what's needed, this just
+             *   flags when it does); on S/Sell, the badge level is already
+             *   EXACTLY 5 (the normal max), meaning owned cards are sell-only
+             *   with no further badges to craft. Exactly 5, not >=5, since
+             *   some special event badges (e.g. Steam Sale cards) can go
+             *   higher and still have more badges to craft.
              * Placed AFTER sce-l-1/2/3 so its !important text colour wins
              * over the CN-based red/orange/amber text colour.
              * :not(.yellow) as usual — yellow always wins. */
@@ -1420,9 +1425,12 @@
         return badgesCraftableAfter > badgesLeft;
     }
 
-    // Adds or removes the sce-exceeds-badge-cap class (red highlight) on the
-    // G/Buy button. Mutually exclusive with sce-completes-badge in practice —
-    // callers should clear the other when setting this one.
+    // Adds or removes the sce-exceeds-badge-cap class (red highlight). Used
+    // by both G/Buy (a specific trade exceeds what's useful for badge 5) and
+    // S/Sell (badge level is already exactly 5, so owned cards are sell-only)
+    // — see the CSS comment above for the full rationale of each. Mutually
+    // exclusive with sce-completes-badge on G in practice — callers there
+    // should clear the other when setting this one.
     function applyExceedsBadgeCapStyle(btn, exceeds) {
         if (exceeds) btn.classList.add('sce-exceeds-badge-cap');
         else btn.classList.remove('sce-exceeds-badge-cap');
@@ -1516,7 +1524,15 @@
             }
 
             btn.textContent = 'S: ' + estimated + ' of ' + totalOwnedThisGame;
-            btn.title = 'Total value: ' + (estimated * cardWorth) + 'c.';
+            // Exactly badge level 5 (the normal max) means these cards can
+            // never be used for another badge — sell-only. Exactly 5, not
+            // >=5: some special event badges go higher and can still craft more.
+            const atBadgeCap = gcData.badgeLevel === 5;
+            btn.title = (atBadgeCap
+                ? 'Badge level for this game is 5, unless it\u2019s an event badge you can\u2019t create more badges.\n'
+                : '')
+                + 'Total value: ' + (estimated * cardWorth) + 'c.';
+            applyExceedsBadgeCapStyle(btn, atBadgeCap);
             btn._sce_pre = {
                 type: 'give_deferred',
                 sceCards: sceData.cards,
@@ -2049,6 +2065,7 @@
 
             if (!sceData.cards.some(function (c) { return c.stock < 8; })) {
                 setButtonYellow(btn, 'No cards to give: bot is at stock cap (8) for all card types.');
+                applyExceedsBadgeCapStyle(btn, false);
                 return;
             }
 
@@ -2058,13 +2075,22 @@
             if (maxCardsUnderCreditLimit <= 0) {
                 const creditsNow = currentCredits !== null ? currentCredits + 'c' : 'unknown';
                 setButtonYellow(btn, 'Credit limit reached: at ' + creditsNow + ', adding any card would exceed 100c.');
+                applyExceedsBadgeCapStyle(btn, false);
                 return;
             }
 
             // Card-name matching happens on the trade page using Steam's live
             // inventory names, which avoids any cross-source name mismatch.
-            btn.title = 'Total value: ' + (maxCardsUnderCreditLimit * cardWorth) + 'c.';
             btn.textContent = 'S: ' + maxCardsUnderCreditLimit + ' of ' + totalOwnedThisGame;
+            // Exactly badge level 5 (the normal max) means these cards can
+            // never be used for another badge — sell-only. Exactly 5, not
+            // >=5: some special event badges go higher and can still craft more.
+            const atBadgeCap = gcData.badgeLevel === 5;
+            btn.title = (atBadgeCap
+                ? 'Badge level for this game is 5, unless it\u2019s an event badge you can\u2019t create more badges.\n'
+                : '')
+                + 'Total value: ' + (maxCardsUnderCreditLimit * cardWorth) + 'c.';
+            applyExceedsBadgeCapStyle(btn, atBadgeCap);
             btn._sce_pre = {
                 type: 'give_deferred',
                 sceCards: sceData.cards,
@@ -2075,6 +2101,7 @@
             await openTrade({ type: 'give', appId: appId, sceCards: sceData.cards, maxCardsUnderCreditLimit: maxCardsUnderCreditLimit, gameName: btn.dataset.gameName || '' }, sceData.botUrl);
         } catch (err) {
             setButtonYellow(btn, 'Error: ' + err.message);
+            applyExceedsBadgeCapStyle(btn, false);
             console.error('SCE Tools [S]:', err);
         } finally {
             // Only reset the spinner; keep yellow state or any precomputed count.
