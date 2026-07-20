@@ -3,7 +3,7 @@ This userscript adds a number of features to the Watchlist and Inventory pages o
 
 The three most useful features are new trade buttons for quicker and easier trades, a button to calculate what booster packs are best to create with gems if used to sell the cards for credits to SCE, and a way to sync the user's actual inventory of Steam Trading Cards with the SCE Watchlist. These features work independently from each other.
 
-![Screenshot](https://github.com/Laurvin/Steam-Card-Exchange-Tools/blob/main/SCE%20Tools.png)
+![Screenshot](https://raw.githubusercontent.com/Laurvin/Steam-Card-Exchange-Tools/refs/heads/master/SCE%20Tools.png)
 
 ## On Page Load
 These tools only work if the table is loaded fully on the page and not split in 20 row chunks as SCE sets it by default. Thus on loading the page we make changes to the table. This will take a number of seconds for the Inventory page (and will only get slower as more games with cards are added to Steam).
