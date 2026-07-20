@@ -123,12 +123,5 @@ Any AppIDs entered into the Blacklist under Settings will be ignored by the scri
 Any game blacklisted will get a "BL" indicator in the T B column to indicate it is blacklisted.
 
 ## Manually hiding games at Badge level 5
-To hide Green games that are already at the maximum badge level create a userstyle with [Stylus](https://github.com/openstyles/stylus) using the following:
+To hide games that are already at the maximum badge level create a userstyle with [Stylus](https://github.com/openstyles/stylus) using the template from [Steam Card Exchange - Badge level 5 highlighter/hider](https://github.com/Laurvin/Steam-Card-Exchange---Badge-level-5-highlighter-hider).
 
-```css
-td a[href="/index.php?inventorygame-appid-275490"],
-td a[href="/index.php?inventorygame-appid-285840"]
-{
-    color:red !important;
-}
-```
