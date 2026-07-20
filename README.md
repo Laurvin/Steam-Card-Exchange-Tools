@@ -121,3 +121,12 @@ Experience learns that if the user does not do this first, it can't be recovered
 Any AppIDs entered into the Blacklist under Settings will be ignored by the script when creating buttons. This means they are ignored when calculating the range for the B, L, and S buttons.
 
 Any game blacklisted will get a "BL" indicator in the T B column to indicate it is blacklisted.
+
+## Manually hiding games at Badge level 5
+To hide Green games that are already at the maximum badge level create a userstyle with [Stylus](https://github.com/openstyles/stylus) using the following:
+
+td a[href="/index.php?inventorygame-appid-275490"],
+td a[href="/index.php?inventorygame-appid-285840"]
+{
+    color:red !important;
+}
