@@ -51,7 +51,11 @@ Other than the above limits it will try and sell as many cards as possible, up t
 
 The S button will show how many cards it is selling out of the number of cards owned. So, if we own five cards but can only sell three cards to not get over the 100 credit limit the S button would show "S: 3 of 5".
 
-Hover over an S button to see the total credit value of the trade. If the button is yellow then no trade can be made, hover over it to see why.
+Hover over an S button to see the total credit value of the trade.
+
+The button will turn red when the games' badge level is 5 and you still have cards.
+
+The button will turn yellow when no trade can be made, either because SCE is at max stock for the cards owned or because the credits would go over the max of 100. Hover over the button to see the exact reason.
 
 Note that because the credit amount is not updated dynamically on the SCE page the S button information is only correct directly after page load. Once cards are sold the user will have to keep track of their current credits, reload the page, or load the SCE Profile page in a new tab.
 
